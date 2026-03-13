@@ -1,21 +1,24 @@
 import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, StyleSheet } from 'react-native';
 
-const ProgressBar = () => {
+export default function ProgressBar({ progress }) {
   return (
-    <View style={styles.container}>
-      <Text>Progress Bar Component</Text>
+    <View style={styles.background}>
+      <View style={[styles.fill, { width: `${progress * 100 > 100 ? 100 : progress * 100}%` }]} />
     </View>
   );
-};
+}
 
 const styles = StyleSheet.create({
-  container: {
-    height: 20,
-    backgroundColor: '#e0e0e0',
-    borderRadius: 10,
+  background: {
+    height: 14,
+    backgroundColor: '#16213e',
+    borderRadius: 7,
     overflow: 'hidden',
   },
+  fill: {
+    height: 14,
+    backgroundColor: '#e94560',
+    borderRadius: 7,
+  },
 });
-
-export default ProgressBar;
