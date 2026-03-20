@@ -1,8 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import ProgressBar from '../components/ProgressBar';
 import BadgeCard from '../components/BadgeCard';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
+
 
 const CHECKLIST_ITEMS = [
   { id: '1', task: 'Store at least 3 days of drinking water', xp: 10 },
@@ -19,6 +22,21 @@ const CHECKLIST_ITEMS = [
 
 export default function ChecklistScreen() {
   const [completed, setCompleted] = useState([]);
+
+  useEffect(() => {
+  const loadData = async () => {
+    const saved = await AsyncStorage.getItem('completedItems');
+    if (saved !== null) {
+      setCompleted(JSON.parse(saved));
+    }
+  };
+  loadData();
+}, []);
+
+useEffect(() => {
+  AsyncStorage.setItem('completedItems', JSON.stringify(completed));
+}, [completed]);
+
 
   const toggleItem = (id) => {
     const updatedCompleted = [];
