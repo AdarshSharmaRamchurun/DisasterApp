@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import * as Location from 'expo-location';
+
 
 const WARNING_LEVELS = {
   1: { label: 'Class 1', color: '#2ecc71', advice: 'A cyclone is in the region. Stay informed and begin preparing.' },
@@ -23,11 +25,54 @@ const DISTRICTS = [
 
 const HIGH_RISK_DISTRICTS = ['Rivière du Rempart', 'Grand Port', 'Savanne', 'Port Louis'];
 
+const DISTRICT_COORDINATES = [
+  { name: 'Port Louis', minLat: -20.18, maxLat: -20.08, minLng: 57.48, maxLng: 57.56 },
+  { name: 'Pamplemousses', minLat: -20.12, maxLat: -19.98, minLng: 57.54, maxLng: 57.58 },
+  { name: 'Rivière du Rempart', minLat: -20.08, maxLat: -19.95, minLng: 57.57, maxLng: 57.78 },
+  { name: 'Flacq', minLat: -20.22, maxLat: -20.05, minLng: 57.68, maxLng: 57.82 },
+  { name: 'Grand Port', minLat: -20.42, maxLat: -20.22, minLng: 57.62, maxLng: 57.82 },
+  { name: 'Savanne', minLat: -20.52, maxLat: -20.35, minLng: 57.44, maxLng: 57.68 },
+  { name: 'Black River', minLat: -20.45, maxLat: -20.18, minLng: 57.32, maxLng: 57.52 },
+  { name: 'Plaines Wilhems', minLat: -20.32, maxLat: -20.18, minLng: 57.44, maxLng: 57.58 },
+  { name: 'Moka', minLat: -20.28, maxLat: -20.12, minLng: 57.52, maxLng: 57.66 },
+];
+
+const getDistrictFromCoords = (lat, lng) => {
+  for (let i = 0; i < DISTRICT_COORDINATES.length; i++) {
+    const d = DISTRICT_COORDINATES[i];
+    if (lat >= d.minLat && lat <= d.maxLat && lng >= d.minLng && lng <= d.maxLng) {
+      return d.name;
+    }
+  }
+  return null;
+};
+
+
 export default function HomeScreen({ navigation }) {
   const [warningLevel, setWarningLevel] = useState(2);
   const [selectedDistrict, setSelectedDistrict] = useState('Rivière du Rempart');
   const [showDistrictPicker, setShowDistrictPicker] = useState(false);
 
+useEffect(() => {
+  const detectLocation = async () => {
+  const { status } = await Location.requestForegroundPermissionsAsync();
+  if (status !== 'granted') return;
+  const location = await Location.getCurrentPositionAsync({
+    accuracy: Location.Accuracy.Balanced,
+  });
+  //console.log('FULL LOCATION:', JSON.stringify(location));
+  const lat = location.coords.latitude;
+  const lng = location.coords.longitude;
+  //console.log('LAT:', lat, 'LNG:', lng);
+  const detected = getDistrictFromCoords(lat, lng);
+  //console.log( detected);
+  if (detected !== null) {
+    setSelectedDistrict(detected);
+  }
+};
+
+  detectLocation();
+}, []);
 
 
   const handleLevelChange = (level) => {
@@ -52,7 +97,7 @@ export default function HomeScreen({ navigation }) {
     <SafeAreaView style={styles.safe}>
       <ScrollView contentContainerStyle={styles.scroll}>
 
-        <Text style={styles.title}>CycloneSafe MU</Text>
+        <Text style={styles.title}>CycloneSafe Mauritius</Text>
         <Text style={styles.subtitle}>Mauritius Cyclone Preparedness</Text>
 
         <View style={[styles.warningCard, { backgroundColor: currentWarning.color }]}>
@@ -79,7 +124,7 @@ export default function HomeScreen({ navigation }) {
           style={styles.districtBtn}
           onPress={() => setShowDistrictPicker(true)}
         >
-          <Text style={styles.districtBtnText}>{selectedDistrict}</Text>
+          <Text style={styles.districtBtnText}>{selectedDistrict}(auto-detected)</Text>
           <Text style={styles.districtBtnArrow}>▼</Text>
         </TouchableOpacity>
 
