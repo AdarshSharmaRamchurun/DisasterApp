@@ -23,7 +23,7 @@ const DISTRICTS = [
   'Moka',
 ];
 
-const HIGH_RISK_DISTRICTS = ['Rivière du Rempart', 'Grand Port', 'Savanne', 'Port Louis'];
+const HIGH_RISK_DISTRICTS = ['Plaines Wilhems', 'Black River', 'Pamplemousses', 'Savanne', 'Port Louis'];
 
 const DISTRICT_COORDINATES = [
   { name: 'Port Louis', minLat: -20.18, maxLat: -20.08, minLng: 57.48, maxLng: 57.56 },

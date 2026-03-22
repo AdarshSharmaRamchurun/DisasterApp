@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import ChecklistItem from '../components/ChecklistItem';
 import ProgressBar from '../components/ProgressBar';
 import BadgeCard from '../components/BadgeCard';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -82,19 +83,17 @@ useEffect(() => {
         <ProgressBar progress={progress} />
         <Text style={styles.percentText}>{Math.round(progress * 100)}% Complete</Text>
         {allDone === true && <BadgeCard />}
+        
         {CHECKLIST_ITEMS.map(item => (
-          <TouchableOpacity
-            key={item.id}
-            style={[styles.item, completed.includes(item.id) && styles.itemDone]}
-            onPress={() => toggleItem(item.id)}
-          >
-            <View style={[styles.checkbox, completed.includes(item.id) && styles.checkboxDone]}>
-              {completed.includes(item.id) && <Text style={styles.tick}>✓</Text>}
-            </View>
-            <Text style={[styles.itemText, completed.includes(item.id) && styles.itemTextDone]}>{item.task}</Text>
-            <Text style={styles.xpReward}>+{item.xp} XP</Text>
-          </TouchableOpacity>
-        ))}
+              <ChecklistItem
+                key={item.id}
+                item={item}
+                isCompleted={completed.includes(item.id)}
+                onToggle={toggleItem}
+              />
+            ))}
+
+
       </ScrollView>
     </SafeAreaView>
   );
@@ -131,49 +130,5 @@ const styles = StyleSheet.create({
     marginBottom: 20,
     marginTop: 4,
   },
-  item: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#16213e',
-    borderRadius: 12,
-    padding: 14,
-    marginBottom: 10,
-  },
-  itemDone: {
-    opacity: 0.6,
-  },
-  checkbox: {
-    width: 24,
-    height: 24,
-    borderRadius: 6,
-    borderWidth: 2,
-    borderColor: '#e94560',
-    marginRight: 12,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  checkboxDone: {
-    backgroundColor: '#e94560',
-  },
-  tick: {
-    color: '#ffffff',
-    fontWeight: '800',
-    fontSize: 14,
-  },
-  itemText: {
-    flex: 1,
-    color: '#ffffff',
-    fontSize: 14,
-    lineHeight: 20,
-  },
-  itemTextDone: {
-    textDecorationLine: 'line-through',
-    color: '#aaaaaa',
-  },
-  xpReward: {
-    color: '#e94560',
-    fontWeight: '700',
-    fontSize: 13,
-    marginLeft: 8,
-  },
+  
 });
